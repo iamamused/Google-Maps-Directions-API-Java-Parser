@@ -179,7 +179,7 @@ public class DirectionsAPI extends ParserAbstract {
 						directionsAPILegs.add(directionsAPILeg);
 					}
 				} else if (node.getNodeName().equals("overview_polyline")) {
-					route.setGeoPoints(this.parsePoly(node));
+					route.setRoughGeoPoints(this.parsePoly(node));
 				} else if (node.getNodeName().equals("copyrights")) {
 					route.setCopyrights(node.getFirstChild().getNodeValue());
 				}
@@ -249,7 +249,7 @@ public class DirectionsAPI extends ParserAbstract {
 				} else if (node.getNodeName().equals(ELEMENT_DURATION)) {
 					// TODO parse value/text pairs.
 				} else if (node.getNodeName().equals("polyline")) {
-					step.setGeoPoints(parsePoly(item));
+					step.setGeoPoints(parsePoly(node));
 				} else if (node.getNodeName().equals("travel_mode")) {
 					// TODO parse travel mode.
 				} else if (node.getNodeName().equals("html_instructions")) {

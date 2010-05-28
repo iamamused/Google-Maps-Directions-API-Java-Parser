@@ -3,8 +3,12 @@
       package="com.directionsexample"
       android:versionCode="1"
       android:versionName="1.0">
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <application 
+    	android:icon="@drawable/icon" 
+    	android:debuggable="true"
+    	android:label="@string/app_name">
         <activity android:name=".DirectionsExample"
+        
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -25,8 +25,12 @@
  */
 package com.jsambells.directions;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import com.google.android.maps.GeoPoint;
+import com.jsambells.directions.RouteAbstract.RoutePathSmoothness;
 import com.jsambells.directions.google.DirectionsAPIWaypoint;
 
 /**
@@ -82,6 +86,19 @@ public abstract class LegAbstract
 		return this.startLocation;
 	}
 
+	public List<GeoPoint> getGeoPointPath( ) {
+		List<GeoPoint> merged = new ArrayList<GeoPoint>();
+		
+		Iterator<StepAbstract> itr = steps.listIterator();
+		while( itr.hasNext() ) {
+			StepAbstract step = (StepAbstract)itr.next();
+			List<GeoPoint> points = step.getGeoPoints();
+			if (points != null) {
+				merged.addAll(points);
+			}
+		}
+		return merged;
+	}
 	
 	public String toString() {
 		return "Leg: (" + this.getStartLocation() + ")->(" + this.getEndLocation() + ") [" + this.getSteps() + "] ";
