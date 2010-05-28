@@ -17,6 +17,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.jsambells.directions.RouteAbstract;
 import com.jsambells.directions.ParserAbstract.Mode;
+import com.jsambells.directions.RouteAbstract.RoutePathSmoothness;
 import com.jsambells.directions.google.DirectionsAPI;
 import com.jsambells.directions.google.DirectionsAPIRoute;
 
@@ -125,22 +126,29 @@ public class DirectionsExample extends MapActivity implements com.jsambells.dire
 				// holders of mapped coords...
 				Point screen = new Point();
 
-				List<GeoPoint> drawPoints = mRoute.getGeoPoints();
+				/* This drawing code needs some work to filter the path to the portion 
+				 * that is on the screen. The FINE line really slows things down
+				 */
+				
+				RoutePathSmoothness smoothenss = (mapView.getZoomLevel() < 5) ? RoutePathSmoothness.ROUGH : RoutePathSmoothness.FINE;
+				List<GeoPoint> drawPoints = mRoute.getGeoPointPath(smoothenss);
 				
 				Iterator<GeoPoint> itr = drawPoints.listIterator();
 
-				// convert the start point.
-				mapView.getProjection().toPixels( (GeoPoint)itr.next(), screen );
-				thePath.moveTo(screen.x, screen.y);
-				
-				while( itr.hasNext() ) {
-					GeoPoint p = (GeoPoint)itr.next();
-					map.getProjection().toPixels( p, screen);
-				    thePath.lineTo(screen.x, screen.y);
+				if (itr.hasNext()) { 
+					// convert the start point.
+					mapView.getProjection().toPixels( (GeoPoint)itr.next(), screen );
+					thePath.moveTo(screen.x, screen.y);
+					
+					while( itr.hasNext() ) {
+						GeoPoint p = (GeoPoint)itr.next();
+						map.getProjection().toPixels( p, screen);
+					    thePath.lineTo(screen.x, screen.y);
+					}
+					
+					this.pathPaint.setStyle(Paint.Style.STROKE);
+					canvas.drawPath(thePath, this.pathPaint);
 				}
-				
-				this.pathPaint.setStyle(Paint.Style.STROKE);
-				canvas.drawPath(thePath, this.pathPaint);
 
 			}
 

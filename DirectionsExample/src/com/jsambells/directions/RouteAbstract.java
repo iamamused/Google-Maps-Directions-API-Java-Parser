@@ -25,6 +25,8 @@
  */
 package com.jsambells.directions;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.android.maps.GeoPoint;
@@ -34,6 +36,11 @@ import com.google.android.maps.GeoPoint;
  */
 public abstract class RouteAbstract
 {
+	
+	public enum RoutePathSmoothness {
+		ROUGH,
+		FINE
+	}
 	
 	private String totalDistance, summary, copyrights;
 	private List<GeoPoint> geoPoints;
@@ -47,11 +54,29 @@ public abstract class RouteAbstract
 		return totalDistance;
 	}
 	
-	public void setGeoPoints(List<GeoPoint> geoPoints) {
+	public void setRoughGeoPoints(List<GeoPoint> geoPoints) {
 		this.geoPoints = geoPoints;
 	}
-	public List<GeoPoint> getGeoPoints() {
-		return geoPoints;
+	public List<GeoPoint> getGeoPointPath( RoutePathSmoothness accuracy ) {
+
+		if (accuracy == RoutePathSmoothness.ROUGH) {
+			return geoPoints;
+		} else if (accuracy == RoutePathSmoothness.FINE) {
+			List<GeoPoint> merged = new ArrayList<GeoPoint>();
+			
+			Iterator<LegAbstract> itr = legs.listIterator();
+			while( itr.hasNext() ) {
+				LegAbstract leg = (LegAbstract)itr.next();
+				List<GeoPoint> points = leg.getGeoPointPath();
+				if (points != null) {
+					merged.addAll(points);
+				}
+			}
+			
+			return merged;
+		}
+		
+		return null;
 	}
 	
 	public void setWaypoints(List<WaypointAbstract> waypointAbstracts) {
