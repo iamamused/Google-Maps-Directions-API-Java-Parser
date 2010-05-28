@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -89,28 +90,39 @@ public class DirectionsAPI extends ParserAbstract {
 		private static final String ELEMENT_DISTANCE = "distance";
 		private static final String ELEMENT_DURATION = "duration";
 		
-		private GeoPoint startPoint;
+		private List<GeoPoint> waypoints;
 		private GeoPoint endPoint;
 
 		public LoadDirectionsTask(List<GeoPoint>waypoints) {
-			this.startPoint = waypoints.get(0);
-			this.endPoint = waypoints.get(1);
+			this.waypoints = waypoints;
 		}
 
 		@Override
 		protected DirectionsAPIRoute doInBackground(Mode... params) {
 
 			StringBuilder urlString = new StringBuilder();
-			urlString.append(BASE_URL).append("&origin=").append(startPoint.getLatitudeE6() / 1E6).append(",").append(
-					startPoint.getLongitudeE6() / 1E6).append("&waypoints=").append(endPoint.getLatitudeE6() / 1E6)
-					.append(",").append(endPoint.getLongitudeE6() / 1E6).append("&sensor=false");
-
+			urlString.append(BASE_URL);
+			urlString.append("&origin=" + (waypoints.get(0).getLatitudeE6() / 1E6) + "," + (waypoints.get(0).getLongitudeE6() / 1E6));
+			urlString.append("&waypoints=");
+			
+			Iterator<GeoPoint> itr = waypoints.listIterator();
+			itr.next(); // Skip the first point since it was the origin.
+			while( itr.hasNext() ) {
+				GeoPoint p = (GeoPoint)itr.next();
+				urlString.append((p.getLatitudeE6() / 1E6) + "," + (p.getLongitudeE6() / 1E6));
+				if (itr.hasNext()) {
+					urlString.append("|");
+				}
+			}
+			
 			if (params[0] == Mode.WALKING) {
 				urlString.append("&mode=walking");
 			} else if (params[0] == Mode.BICYCLING) {
 				urlString.append("&mode=bicycling");
 			}
 
+			urlString.append("&sensor=false");
+			
 			DirectionsAPIRoute route = null;
 			try {
 				Log.i(TAG, "Open URL:" + urlString.toString());

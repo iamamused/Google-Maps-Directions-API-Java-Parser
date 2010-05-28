@@ -69,7 +69,7 @@ public abstract class ParserAbstract
 	public AsyncTask getDirectionsThruWaypoints(List<GeoPoint> waypoints, Mode mode, IDirectionsListener listener)
 	{
 		if ((waypoints == null) || (waypoints.size() < 2) || (mode == null)) {
-			throw new IllegalArgumentException ("waypoints must be > 2 or mode arguments can't be null");
+			throw new IllegalArgumentException ("waypoints must be > 1 or mode arguments can't be null");
 		}
 		
 		this.mode = mode;
